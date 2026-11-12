@@ -56,6 +56,23 @@ jobs:
             Husk/build
           key: husk-ios-arm64-${{ hashFiles('Husk/scripts/build_ios.sh', 'Husk/scripts/fetch_sources.sh') }}
 
+      - name: Select Xcode 27.3 when available
+        run: |
+          set -euo pipefail
+          echo "Installed Xcode applications:"
+          ls -d /Applications/Xcode*.app || true
+          for app in /Applications/Xcode*.app; do
+            [ -d "$app" ] || continue
+            version=$("$app/Contents/Developer/usr/bin/xcodebuild" -version 2>/dev/null | head -n 1 || true)
+            if [ "$version" = "Xcode 27.3" ]; then
+              echo "DEVELOPER_DIR=$app/Contents/Developer" >> "$GITHUB_ENV"
+              echo "Selected Xcode 27.3: $app"
+              exit 0
+            fi
+          done
+          echo "Xcode 27.3 is not installed on this runner; using its default Xcode."
+          echo "Check the SDK diagnostics and update runner when an image with 27.3 is available."
+
       - name: Print runner and Xcode diagnostics
         run: |
           sw_vers
@@ -116,28 +133,6 @@ jobs:
           unzip -t "$IPA" > /dev/null
           unzip -Z1 "$IPA" | grep -Fq 'Info.plist'
           echo "IPA archive verified"
-
-      - name: Upload Henge.ipa
-        uses: actions/upload-artifact@v4
-        with:
-          name: Henge-GoldenGate-M3-unsigned-${{ github.sha }}
-          retention-days: 14
-          path: /Users/runner/Desktop/Henge.ipa
-          if-no-files-found: error
-
-      - name: Package Henge.tipa
-        working-directory: Henge
-        run: zsh ios/scripts/package_ipa.sh --trollstore
-
-      - name: Upload Henge.tipa
-        uses: actions/upload-artifact@v4
-        with:
-          name: Henge-tipa-${{ github.sha }}
-          path: /Users/runner/Desktop/Henge.tipa
-          if-no-files-found: error
-
-          echo "IPA size: $(du -h "$IPA" | cut -f1)"
-          echo "Package verified: archive readable and app Info.plist present"
 
       - name: Upload Henge.ipa
         uses: actions/upload-artifact@v4
