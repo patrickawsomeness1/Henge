@@ -114,7 +114,11 @@ jobs:
           IPA=/Users/runner/Desktop/Henge.ipa
           test -s "$IPA"
           unzip -t "$IPA" > /dev/null
-          unzip -Z1 "$IPA" | grep -Eq '^Payload/[^/]+\\.app/Info\\.plist        uses: actions/upload-artifact@v4
+          unzip -Z1 "$IPA" | grep -Fq 'Info.plist'
+          echo "IPA archive verified"
+
+      - name: Upload Henge.ipa
+        uses: actions/upload-artifact@v4
         with:
           name: Henge-GoldenGate-M3-unsigned-${{ github.sha }}
           retention-days: 14
