@@ -29,7 +29,7 @@ env:
 
 jobs:
   build:
-    # Use a documented GitHub-hosted macOS runner label. The previous\n    # xcode-27 label is not a standard hosted runner label.\n    runs-on: macos-15
+    # Standard GitHub-hosted macOS runner.\n    runs-on: macos-15
     timeout-minutes: 120
 
     steps:
