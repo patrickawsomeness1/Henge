@@ -29,7 +29,8 @@ env:
 
 jobs:
   build:
-    # Standard GitHub-hosted macOS runner.\n    runs-on: macos-15
+    # Standard GitHub-hosted macOS runner.
+    runs-on: macos-15
     timeout-minutes: 120
 
     steps:
