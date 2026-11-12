@@ -29,10 +29,7 @@ env:
 
 jobs:
   build:
-    # Xcode 27 image (arm64, GA since Oct 2026). Plain `xcode-27` is a standard
-    # runner, so it's free on public repos; `xcode-27-xlarge` is a paid larger
-    # runner. Table: https://github.com/actions/runner-images#available-images
-    runs-on: xcode-27
+    # Use a documented GitHub-hosted macOS runner label. The previous\n    # xcode-27 label is not a standard hosted runner label.\n    runs-on: macos-15
     timeout-minutes: 120
 
     steps:
@@ -58,6 +55,12 @@ jobs:
             Husk/third_party/build
             Husk/build
           key: husk-ios-arm64-${{ hashFiles('Husk/scripts/build_ios.sh', 'Husk/scripts/fetch_sources.sh') }}
+
+      - name: Print runner and Xcode diagnostics
+        run: |
+          sw_vers
+          xcodebuild -version
+          xcrun --sdk iphoneos --show-sdk-version
 
       - name: Install build tools
         run: |
